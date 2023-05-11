@@ -195,7 +195,7 @@ class LoginPage extends React.Component {
               />
             )}
             {isSocialAuthActive && (
-              <div className="row m-0" style="flex-direction:column;align-content:center;justify-content:center;">
+              <div className="row m-0 sociales" >
                 <SocialAuthProviders socialAuthProviders={providers} />
               </div>
             )}
