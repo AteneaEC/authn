@@ -195,7 +195,7 @@ class LoginPage extends React.Component {
               />
             )}
             {isSocialAuthActive && (
-              <div className="row m-0">
+              <div className="row m-0" styles="flex-direction:column;align-content:center;">
                 <SocialAuthProviders socialAuthProviders={providers} />
               </div>
             )}
@@ -296,7 +296,7 @@ class LoginPage extends React.Component {
               {intl.formatMessage(messages['forgot.password'])}
             </Link>
 
-            <div className="margin">
+            <div className="margin my-4">
               <StatefulButton
                 name="sign-in"
                 id="sign-in"

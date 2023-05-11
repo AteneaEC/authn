@@ -52,6 +52,8 @@ $elevation-level-2-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
 
 .login-button-width {
   min-width: 6rem;
+  width: 300px;
+  margin-bottom: 1rem;
 }
 
 .tpa-skeleton {
@@ -107,7 +109,7 @@ $elevation-level-2-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
 
   background-color: $white;
   border: 1px solid $font-blue;
-  width: 224px;
+  width: 300px;
   height: 36px;
   color: $font-blue;
 
