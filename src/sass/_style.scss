@@ -749,6 +749,8 @@ div.sociales .btn-social{
   justify-content: center;
   align-content: center;
   font-weight: bold;
+  border: solid 1px lightgray;
+  box-shadow: 1px 1px 10px lightgray;
 }
 div.sociales .font-container{
   display: none;
@@ -761,18 +763,20 @@ div.sociales .font-container{
 .btn-oa2-google-oauth2>span:first-child::before,.btn-oa2-google-oauth2 #provider-name::before{
   content:" ";
   position: absolute;
-  left: -1rem;
+  left: -1.5rem;
   top: 0rem;
   background-image:url('https://d2k1ftgv7pobq7.cloudfront.net/meta/c/p/res/images/8215f6659adc202403198fef903a447e/sign-in-with-google.svg');
   width: 1.5rem;
   height: 1.5rem;
+  background-size: contain;
 }
 .btn-oa2-azuread-oauth2>span:first-child::before,.btn-oa2-azuread-oauth2 #provider-name::before{
   content:" ";
   position: absolute;
-  left: -1rem;
+  left: -1.5rem;
   top: 0rem;
   background-image:url('https://d2k1ftgv7pobq7.cloudfront.net/meta/c/p/res/images/72ece804e5285ab6507e2406157cda3c/microsoft-logo.svg');
   width: 1.5rem;
   height: 1.5rem;
+  background-size: contain;
 }
