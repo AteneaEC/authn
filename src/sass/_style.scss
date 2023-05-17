@@ -757,7 +757,7 @@ div.sociales .font-container{
   width: fit-content;
   margin: 0 auto;
 }
-.btn-oa2-google-oauth2>span:first-child::before{
+.btn-oa2-google-oauth2>span:first-child::before,.btn-oa2-google-oauth2 #provider-name::before{
   content:" ";
   position: absolute;
   left: -1rem;
@@ -766,7 +766,7 @@ div.sociales .font-container{
   width: 1.5rem;
   height: 1.5rem;
 }
-.btn-oa2-azuread-oauth2>span:first-child::before{
+.btn-oa2-azuread-oauth2>span:first-child::before,.btn-oa2-azuread-oauth2 #provider-name::before{
   content:" ";
   position: absolute;
   left: -1rem;
