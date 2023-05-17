@@ -43,11 +43,11 @@ function SocialAuthProviders(props) {
           </>
         )}
       <span id="provider-name" className="notranslate mr-auto pl-2" aria-hidden="true">{provider.name}</span>
-      <span className="sr-only">
+      {/* <span className="sr-only">
         {referrer === LOGIN_PAGE
           ? intl.formatMessage(messages['sso.sign.in.with'], { providerName: provider.name })
           : intl.formatMessage(messages['sso.create.account.using'], { providerName: provider.name })}
-      </span>
+      </span> */}
     </button>
   ));
 

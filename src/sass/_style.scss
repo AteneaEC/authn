@@ -756,6 +756,7 @@ div.sociales .font-container{
 .btn-oa2-google-oauth2 #provider-name,.btn-oa2-google-oauth2>span,.btn-oa2-azuread-oauth2 #provider-name,.btn-oa2-azuread-oauth2>span{
   width: fit-content;
   margin: 0 auto;
+  position: relative;
 }
 .btn-oa2-google-oauth2>span:first-child::before,.btn-oa2-google-oauth2 #provider-name::before{
   content:" ";
