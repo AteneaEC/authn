@@ -20,7 +20,8 @@ const LargeLayout = ({ fullName }) => {
           <div className="large-screen-left-container mr-n4.5 large-yellow-line mt-5" />
           <div>
             <h1 className="welcome-to-platform data-hj-suppress">
-              {formatMessage(messages['welcome.to.platform'], { siteName: getConfig().SITE_NAME, fullName })}
+              Bienvenido 
+              <span>{getConfig().SITE_NAME}</span>
             </h1>
             <h2 className="complete-your-profile">
               {formatMessage(messages['complete.your.profile.1'])}

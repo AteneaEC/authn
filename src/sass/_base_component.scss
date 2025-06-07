@@ -14,6 +14,7 @@
 }
 
 .content {
+  background-color: white;
   @include media-breakpoint-up('xl') {
     display: flex;
     justify-content: center;

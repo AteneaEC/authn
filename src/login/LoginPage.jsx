@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
+
 import { getConfig } from '@edx/frontend-platform';
 import { sendPageEvent, sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, useIntl } from '@edx/frontend-platform/i18n';
 import {
-  Form, StatefulButton,
+  Form, StatefulButton,Image
 } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
@@ -209,7 +210,7 @@ const LoginPage = (props) => {
         redirectUrl={loginResult.redirectUrl}
         finishAuthUrl={finishAuthUrl}
       />
-      <div className="mw-xs mt-3 mb-2">
+      <div className="mw-xs mt-3 mb-2 text-center">
         <LoginFailureMessage
           errorCode={errorCode.type}
           errorCount={errorCode.count}
@@ -223,6 +224,7 @@ const LoginPage = (props) => {
           messageType={activationMsgType}
         />
         {showResetPasswordSuccessBanner && <ResetPasswordSuccess />}
+        <img src="/login.png" class="w-50 mx-auto" alt="Login image"/>
         <Form id="sign-in-form" name="sign-in-form">
           <FormGroup
             name="emailOrUsername"
