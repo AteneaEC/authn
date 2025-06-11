@@ -1,4 +1,6 @@
 // Load component based styles
+$primary: #1877F2;
+$primary-400: #0d6ae3;
 @import "_base_component.scss";
 @import "_registration.scss";
 @import "_recommendations_page.scss";
@@ -457,4 +459,7 @@ select.form-control {
 
 .pgn__form-control-decorator-trailing {
   right: 0 !important;
+}
+.bg-primary-400{
+  background-color: #0d6ae3 !important;
 }

@@ -1,4 +1,6 @@
 
+$primary: #1877F2;
+
 .layout {
   display: flex;
 
@@ -159,7 +161,7 @@
 }
 
 .large-screen-svg-primary {
-  fill: $primary-400;
+  fill: #0d6ae3;
 }
 
 .medium-screen-svg-light,
@@ -170,7 +172,7 @@
 }
 
 .medium-screen-svg-primary {
-  fill: $primary-400;
+  fill: #0d6ae3;
 }
 
 [dir=rtl]{

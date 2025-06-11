@@ -45,6 +45,8 @@ import {
 } from '../data/utils';
 import ResetPasswordSuccess from '../reset-password/ResetPasswordSuccess';
 
+import logoimage from './login.png';
+
 const LoginPage = (props) => {
   const {
     backedUpFormData,
@@ -224,7 +226,7 @@ const LoginPage = (props) => {
           messageType={activationMsgType}
         />
         {showResetPasswordSuccessBanner && <ResetPasswordSuccess />}
-        <img src="/login.png" class="w-50 mx-auto" alt="Login image"/>
+        <img src={logoimage} class="w-50 mx-auto" alt="Login image"/>
         <Form id="sign-in-form" name="sign-in-form">
           <FormGroup
             name="emailOrUsername"
