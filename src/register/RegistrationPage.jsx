@@ -47,9 +47,6 @@ import {
   getAllPossibleQueryParams, getTpaHint, getTpaProvider, isHostAvailableInQueryParams, setCookie,
 } from '../data/utils';
 
-/**
- * Main Registration Page component
- */
 const RegistrationPage = (props) => {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -95,17 +92,21 @@ const RegistrationPage = (props) => {
   const [errors, setErrors] = useState({ ...backedUpFormData.errors });
   const [errorCode, setErrorCode] = useState({ type: '', count: 0 });
   const [formStartTime, setFormStartTime] = useState(null);
-  // temporary error state for embedded experience because we don't want to show errors on blur
   const [temporaryErrors, setTemporaryErrors] = useState({ ...backedUpFormData.errors });
+
+  // CUSTOM FIELD: estados de selects dependientes
+  const [provincias, setProvincias] = useState([]);
+  const [ciudades, setCiudades] = useState([]);
+  const [unidades, setUnidades] = useState([]);
+  const [provinciaSel, setProvinciaSel] = useState('');
+  const [ciudadSel, setCiudadSel] = useState('');
+  const [unidadSel, setUnidadSel] = useState('');
 
   const { cta, host } = queryParams;
   const buttonLabel = cta
     ? formatMessage(messages['create.account.cta.button'], { label: cta })
     : formatMessage(messages['create.account.for.free.button']);
 
-  /**
-   * Set the userPipelineDetails data in formFields for only first time
-   */
   useEffect(() => {
     if (!userPipelineDataLoaded && thirdPartyAuthApiStatus === COMPLETE_STATE) {
       if (thirdPartyAuthErrorMessage) {
@@ -119,12 +120,7 @@ const RegistrationPage = (props) => {
         dispatch(setUserPipelineDataLoaded(true));
       }
     }
-  }, [ // eslint-disable-line react-hooks/exhaustive-deps
-    thirdPartyAuthApiStatus,
-    thirdPartyAuthErrorMessage,
-    pipelineUserDetails,
-    userPipelineDataLoaded,
-  ]);
+  }, [thirdPartyAuthApiStatus, thirdPartyAuthErrorMessage, pipelineUserDetails, userPipelineDataLoaded, dispatch]);
 
   useEffect(() => {
     if (!formStartTime) {
@@ -138,9 +134,6 @@ const RegistrationPage = (props) => {
     }
   }, [dispatch, formStartTime, queryParams, tpaHint]);
 
-  /**
-   * Backup the registration form in redux when register page is toggled.
-   */
   useEffect(() => {
     if (shouldBackupState) {
       dispatch(backupRegistrationFormBegin({
@@ -170,10 +163,7 @@ const RegistrationPage = (props) => {
 
   useEffect(() => {
     if (registrationResult.success) {
-      // This event is used by GTM
       sendTrackEvent('edx.bi.user.account.registered.client', {});
-
-      // This is used by the "User Retention Rate Event" on GTM
       setCookie(getConfig().USER_RETENTION_COOKIE_NAME, true);
     }
   }, [registrationResult]);
@@ -208,9 +198,51 @@ const RegistrationPage = (props) => {
     }
   };
 
+  // CUSTOM FIELD: Fetch provincias al cargar
+  useEffect(() => {
+    fetch('http://localhost:8500/provincias')
+      .then(res => res.json())
+      .then(data => setProvincias(data))
+      .catch(() => setProvincias([]));
+  }, []);
+
+  // CUSTOM FIELD: Fetch ciudades cuando cambia provincia
+  useEffect(() => {
+    if (provinciaSel) {
+      fetch('http://localhost:8500/ciudades?provincia_id=' + provinciaSel)
+        .then(res => res.json())
+        .then(data => setCiudades(data))
+        .catch(() => setCiudades([]));
+      setCiudadSel('');
+      setUnidadSel('');
+      setUnidades([]);
+    }
+  }, [provinciaSel]);
+
+  // CUSTOM FIELD: Fetch unidades educativas cuando cambia ciudad
+  useEffect(() => {
+    if (ciudadSel) {
+      fetch('http://localhost:8500/unidades_educativas?ciudad_id=' + ciudadSel)
+        .then(res => res.json())
+        .then(data => setUnidades(data))
+        .catch(() => setUnidades([]));
+      setUnidadSel('');
+    }
+  }, [ciudadSel]);
+
+  // CUSTOM FIELD: Manejar cambios en selects
+  const handleProvinciaChange = (e) => setProvinciaSel(e.target.value);
+  const handleCiudadChange = (e) => setCiudadSel(e.target.value);
+  const handleUnidadChange = (e) => setUnidadSel(e.target.value);
+
+  // CUSTOM FIELD: agregar al payload los campos nuevos
   const registerUser = () => {
     const totalRegistrationTime = (Date.now() - formStartTime) / 1000;
     let payload = { ...formFields };
+
+    payload.provincia_id = provinciaSel || null;
+    payload.ciudad_id = ciudadSel || null;
+    payload.unidad_educativa_id = unidadSel || null;
 
     if (currentProvider) {
       delete payload.password;
@@ -220,7 +252,6 @@ const RegistrationPage = (props) => {
       delete payload.username;
     }
 
-    // Validating form data before submitting
     const { isValid, fieldErrors, emailSuggestion } = isFormValid(
       payload,
       registrationEmbedded ? temporaryErrors : errors,
@@ -231,13 +262,11 @@ const RegistrationPage = (props) => {
     setErrors({ ...fieldErrors });
     dispatch(setEmailSuggestionInStore(emailSuggestion));
 
-    // returning if not valid
     if (!isValid) {
       setErrorCode(prevState => ({ type: FORM_SUBMISSION_ERROR, count: prevState.count + 1 }));
       return;
     }
 
-    // Preparing payload for submission
     payload = prepareRegistrationPayload(
       payload,
       configurableFormFields,
@@ -245,7 +274,6 @@ const RegistrationPage = (props) => {
       totalRegistrationTime,
       queryParams);
 
-    // making register call
     dispatch(registerNewUser(payload));
   };
 
@@ -307,7 +335,7 @@ const RegistrationPage = (props) => {
               failureCount={errorCode.count}
               context={{ provider: currentProvider, errorMessage: thirdPartyAuthErrorMessage }}
             />
-            <Form id="registration-form" name="registration-form">
+            <Form id="registration-form" name="registration-form" onSubmit={handleSubmit}>
               <NameField
                 name="name"
                 value={formFields.name}
@@ -328,6 +356,35 @@ const RegistrationPage = (props) => {
                 helpText={[formatMessage(messages['help.text.email'])]}
                 floatingLabel={formatMessage(messages['registration.email.label'])}
               />
+              {/* CUSTOM FIELD: Selects dependientes */}
+              <div className="form-group">
+                <label htmlFor="provincia">Provincia</label>
+                <select className="form-control" id="provincia" value={provinciaSel} onChange={handleProvinciaChange} required>
+                  <option value="">Seleccione una provincia</option>
+                  {provincias.map(p => (
+                    <option key={p.id} value={p.id}>{p.nombre}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="ciudad">Ciudad</label>
+                <select className="form-control" id="ciudad" value={ciudadSel} onChange={handleCiudadChange} required disabled={!provinciaSel}>
+                  <option value="">Seleccione una ciudad</option>
+                  {ciudades.map(c => (
+                    <option key={c.id} value={c.id}>{c.nombre}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="unidad_educativa">Unidad Educativa</label>
+                <select className="form-control" id="unidad_educativa" value={unidadSel} onChange={handleUnidadChange} required disabled={!ciudadSel}>
+                  <option value="">Seleccione una unidad educativa</option>
+                  {unidades.map(u => (
+                    <option key={u.id} value={u.id}>{u.nombre}</option>
+                  ))}
+                </select>
+              </div>
+              {/* FIN CUSTOM FIELD */}
               {!flags.autoGeneratedUsernameEnabled && (
                 <UsernameField
                   name="username"
@@ -370,7 +427,6 @@ const RegistrationPage = (props) => {
                   default: buttonLabel,
                   pending: '',
                 }}
-                onClick={handleSubmit}
                 onMouseDown={(e) => e.preventDefault()}
               />
               {!registrationEmbedded && (
@@ -385,7 +441,6 @@ const RegistrationPage = (props) => {
             </Form>
           </div>
         )}
-
       </>
     );
   };
