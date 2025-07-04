@@ -200,7 +200,7 @@ const RegistrationPage = (props) => {
 
   // CUSTOM FIELD: Fetch provincias al cargar
   useEffect(() => {
-    fetch('http://localhost:8500/provincias')
+    fetch('http://3.223.242.156:8500/provincias')
       .then(res => res.json())
       .then(data => setProvincias(data))
       .catch(() => setProvincias([]));
@@ -209,7 +209,7 @@ const RegistrationPage = (props) => {
   // CUSTOM FIELD: Fetch ciudades cuando cambia provincia
   useEffect(() => {
     if (provinciaSel) {
-      fetch('http://localhost:8500/ciudades?provincia_id=' + provinciaSel)
+      fetch('http://3.223.242.156:8500/ciudades?provincia_id=' + provinciaSel)
         .then(res => res.json())
         .then(data => setCiudades(data))
         .catch(() => setCiudades([]));
@@ -222,7 +222,7 @@ const RegistrationPage = (props) => {
   // CUSTOM FIELD: Fetch unidades educativas cuando cambia ciudad
   useEffect(() => {
     if (ciudadSel) {
-      fetch('http://localhost:8500/unidades_educativas?ciudad_id=' + ciudadSel)
+      fetch('http://3.223.242.156:8500/unidades_educativas?ciudad_id=' + ciudadSel)
         .then(res => res.json())
         .then(data => setUnidades(data))
         .catch(() => setUnidades([]));
