@@ -274,7 +274,28 @@ const RegistrationPage = (props) => {
       totalRegistrationTime,
       queryParams);
 
-    dispatch(registerNewUser(payload));
+    //dispatch(registerNewUser(payload));
+     dispatch(registerNewUser(payload)).then((result) => {
+      // aquí result viene de la acción redux (puede variar según implementación)
+      if (result.success) {
+        // obtener user_id (puede venir de la respuesta, revisa la estructura)
+        fetch('/api/user/v1/me/', { credentials: 'include' })
+          .then(res => res.json())
+          .then(data => {
+            const user_id = data.id;
+            fetch('https://api.lms25.revelds.com/user_location', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                user_id,
+                provincia_id: provinciaSel,
+                ciudad_id: ciudadSel,
+                unidad_educativa_id: unidadSel
+              })
+            });
+          });
+      }
+    });
   };
 
   const handleSubmit = (e) => {
