@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useMemo, useState,
+  useEffect, useMemo, useState, useRef,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -107,6 +107,9 @@ const RegistrationPage = (props) => {
     ? formatMessage(messages['create.account.cta.button'], { label: cta })
     : formatMessage(messages['create.account.for.free.button']);
 
+  // --- PARA EVITAR DOBLE POST ---
+  const locationSaved = useRef(false);
+
   useEffect(() => {
     if (!userPipelineDataLoaded && thirdPartyAuthApiStatus === COMPLETE_STATE) {
       if (thirdPartyAuthErrorMessage) {
@@ -161,16 +164,50 @@ const RegistrationPage = (props) => {
     }
   }, [registrationErrorCode]);
 
-  // ------ ORDEN ORIGINAL: PRIMERO evento y cookie, LUEGO custom handle ------
+  // ------ ORIGINAL: Evento y cookie ------
   useEffect(() => {
     if (registrationResult.success) {
       sendTrackEvent('edx.bi.user.account.registered.client', {});
       setCookie(getConfig().USER_RETENTION_COOKIE_NAME, true);
-      handleAfterRegister(); // LLAMA AQUÍ LA FUNCIÓN CUSTOM (ver abajo)
     }
-    // eslint-disable-next-line
-  }, [registrationResult.success]);
-  // --------------------------------------------------------------------------
+  }, [registrationResult]);
+
+  // =========== POST UBICACIÓN y REDIRECCIÓN =============
+  useEffect(() => {
+    // Solo ejecuta cuando el registro fue success y hay selects
+    if (
+      registrationResult.success &&
+      registrationResult.authenticatedUser &&
+      registrationResult.authenticatedUser.userId &&
+      provinciaSel && ciudadSel && unidadSel &&
+      !locationSaved.current
+    ) {
+      locationSaved.current = true;
+      // POST ubicación y luego redirecciona
+      fetch('https://api.lms25.revelds.com/user_location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: registrationResult.authenticatedUser.userId,
+          provincia_id: provinciaSel,
+          ciudad_id: ciudadSel,
+          unidad_educativa_id: unidadSel
+        })
+      }).finally(() => {
+        if (registrationResult.redirectUrl) {
+          window.location.href = registrationResult.redirectUrl;
+        } else {
+          window.location.href = '/learner-dashboard';
+        }
+      });
+    }
+  }, [
+    registrationResult,
+    provinciaSel,
+    ciudadSel,
+    unidadSel,
+  ]);
+  // =======================================================
 
   const handleOnChange = (event) => {
     const { name } = event.target;
@@ -291,41 +328,6 @@ const RegistrationPage = (props) => {
       registerUser();
     }
   }, [autoSubmitRegForm, userPipelineDataLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // =========== FUNCIÓN CUSTOM PARA GUARDAR UBICACIÓN Y REDIRIGIR ===========
-  const handleAfterRegister = async () => {
-    // Solo ejecuta si hay selects llenos
-    if (provinciaSel && ciudadSel && unidadSel) {
-      try {
-        // Busca el user_id por email o username (ajusta si tienes mejor endpoint)
-        const response = await fetch(`/api/user/v1/me/`, {
-          credentials: 'include',
-        });
-        const user = await response.json();
-        if (user && user.id) {
-          await fetch('https://api.lms25.revelds.com/user_location', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              user_id: user.id,
-              provincia_id: provinciaSel,
-              ciudad_id: ciudadSel,
-              unidad_educativa_id: unidadSel
-            })
-          });
-        }
-      } catch (err) {
-        // log opcional
-      }
-    }
-    // Redirige al dashboard (esto puede estar duplicado en otros hooks, si ya redirige puedes quitarlo aquí)
-    if (registrationResult.redirectUrl) {
-      window.location.href = registrationResult.redirectUrl;
-    } else {
-      window.location.href = '/learner-dashboard';
-    }
-  };
-  // ========================================================================
 
   const renderForm = () => {
     if (institutionLogin) {
