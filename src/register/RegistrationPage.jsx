@@ -358,7 +358,6 @@ const RegistrationPage = (props) => {
               />
               {/* CUSTOM FIELD: Selects dependientes */}
               <div className="form-group">
-                <label htmlFor="provincia">Provincia</label>
                 <select className="form-control" id="provincia" value={provinciaSel} onChange={handleProvinciaChange} required>
                   <option value="">Seleccione una provincia</option>
                   {provincias.map(p => (
@@ -367,7 +366,6 @@ const RegistrationPage = (props) => {
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="ciudad">Ciudad</label>
                 <select className="form-control" id="ciudad" value={ciudadSel} onChange={handleCiudadChange} required disabled={!provinciaSel}>
                   <option value="">Seleccione una ciudad</option>
                   {ciudades.map(c => (
@@ -376,7 +374,6 @@ const RegistrationPage = (props) => {
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="unidad_educativa">Unidad Educativa</label>
                 <select className="form-control" id="unidad_educativa" value={unidadSel} onChange={handleUnidadChange} required disabled={!ciudadSel}>
                   <option value="">Seleccione una unidad educativa</option>
                   {unidades.map(u => (
@@ -471,5 +468,29 @@ RegistrationPage.defaultProps = {
   handleInstitutionLogin: null,
   institutionLogin: false,
 };
+
+useEffect(() => {
+  // Solo cuando se registre con éxito y haya datos en los selects
+  if (registrationResult.success && provinciaSel && ciudadSel && unidadSel) {
+    // 1. Obtener el user_id actual
+    fetch('/api/user/v1/me/', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        const user_id = data.id;
+
+        // 2. Registrar la ubicación en tu API
+        fetch('https://api.lms25.revelds.com/user_location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id,
+            provincia_id: provinciaSel,
+            ciudad_id: ciudadSel,
+            unidad_educativa_id: unidadSel
+          })
+        });
+      });
+  }
+}, [registrationResult.success]); // Solo ejecuta cuando cambia el estado de registro
 
 export default RegistrationPage;
