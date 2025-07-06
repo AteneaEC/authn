@@ -442,6 +442,30 @@ const RegistrationPage = (props) => {
     );
   };
 
+  useEffect(() => {
+    // Solo cuando se registre con éxito y haya datos en los selects
+    if (registrationResult.success && provinciaSel && ciudadSel && unidadSel) {
+      // 1. Obtener el user_id actual
+      fetch('/api/user/v1/me/', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          const user_id = data.id;
+
+          // 2. Registrar la ubicación en tu API
+          fetch('https://api.lms25.revelds.com/user_location', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id,
+              provincia_id: provinciaSel,
+              ciudad_id: ciudadSel,
+              unidad_educativa_id: unidadSel
+            })
+          });
+        });
+    }
+  }, [registrationResult.success]); // Solo ejecuta cuando cambia el estado de registro
+
   if (tpaHint) {
     if (thirdPartyAuthApiStatus === PENDING_STATE) {
       return <Skeleton height={36} />;
@@ -468,29 +492,5 @@ RegistrationPage.defaultProps = {
   handleInstitutionLogin: null,
   institutionLogin: false,
 };
-
-useEffect(() => {
-  // Solo cuando se registre con éxito y haya datos en los selects
-  if (registrationResult.success && provinciaSel && ciudadSel && unidadSel) {
-    // 1. Obtener el user_id actual
-    fetch('/api/user/v1/me/', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        const user_id = data.id;
-
-        // 2. Registrar la ubicación en tu API
-        fetch('https://api.lms25.revelds.com/user_location', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_id,
-            provincia_id: provinciaSel,
-            ciudad_id: ciudadSel,
-            unidad_educativa_id: unidadSel
-          })
-        });
-      });
-  }
-}, [registrationResult.success]); // Solo ejecuta cuando cambia el estado de registro
 
 export default RegistrationPage;
