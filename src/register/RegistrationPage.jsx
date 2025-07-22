@@ -184,7 +184,7 @@ const RegistrationPage = (props) => {
     ) {
       locationSaved.current = true;
       // POST ubicación y luego redirecciona
-      fetch('https://api.lms25.revelds.com/user_location', {
+      fetch('https://ue.lxpup.atenea.digital/user_location', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -241,7 +241,7 @@ const RegistrationPage = (props) => {
 
   // CUSTOM FIELD: Fetch provincias al cargar
   useEffect(() => {
-    fetch('https://api.lms25.revelds.com/provincias')
+    fetch('https://ue.lxpup.atenea.digital/provincias')
       .then(res => res.json())
       .then(data => setProvincias(data))
       .catch(() => setProvincias([]));
@@ -250,7 +250,7 @@ const RegistrationPage = (props) => {
   // CUSTOM FIELD: Fetch ciudades cuando cambia provincia
   useEffect(() => {
     if (provinciaSel) {
-      fetch('https://api.lms25.revelds.com/ciudades?provincia_id=' + provinciaSel)
+      fetch('https://ue.lxpup.atenea.digital/ciudades?provincia_id=' + provinciaSel)
         .then(res => res.json())
         .then(data => setCiudades(data))
         .catch(() => setCiudades([]));
@@ -263,7 +263,7 @@ const RegistrationPage = (props) => {
   // CUSTOM FIELD: Fetch unidades educativas cuando cambia ciudad
   useEffect(() => {
     if (ciudadSel) {
-      fetch('https://api.lms25.revelds.com/unidades_educativas?ciudad_id=' + ciudadSel)
+      fetch('https://ue.lxpup.atenea.digital/unidades_educativas?ciudad_id=' + ciudadSel)
         .then(res => res.json())
         .then(data => setUnidades(data))
         .catch(() => setUnidades([]));
