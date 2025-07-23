@@ -101,6 +101,13 @@ const RegistrationPage = (props) => {
   const [provinciaSel, setProvinciaSel] = useState('');
   const [ciudadSel, setCiudadSel] = useState('');
   const [unidadSel, setUnidadSel] = useState('');
+  const [rolSel, setRolSel] = useState(''); // NUEVO campo para rol
+
+  const rolesDisponibles = [
+    { value: '', label: 'Seleccione un rol' },
+    { value: 'estudiante', label: 'Estudiante' },
+    { value: 'docente', label: 'Docente' },
+  ];
 
   const { cta, host } = queryParams;
   const buttonLabel = cta
@@ -191,7 +198,8 @@ const RegistrationPage = (props) => {
           user_id: registrationResult.authenticatedUser.userId,
           provincia_id: provinciaSel,
           ciudad_id: ciudadSel,
-          unidad_educativa_id: unidadSel
+          unidad_educativa_id: unidadSel,
+          rol: rolSel
         })
       }).finally(() => {
         if (registrationResult.redirectUrl) {
